@@ -6,6 +6,9 @@ import Footer from "./components/Footer";
 export const metadata: Metadata = {
   title: "TUKA Official Store | Premium SaaS Hub",
   description: "Solusi bisnis digital elegan dan profesional.",
+  verification: {
+    google: "F8-qAir322zBSKzxINGeb_ahWPg-JPWwtIBUBm-Osik",
+  },
 };
 
 export default function RootLayout({
