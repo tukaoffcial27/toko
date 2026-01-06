@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import dataSeoRaw from "@/data-seo.json";
 import { notFound } from "next/navigation";
-import Link from "next/link"; // Tambahkan import Link
+import Link from "next/link";
 
 // 1. DEFINISI TIPE
 interface SEOData {
@@ -44,13 +44,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function pSEOPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const data = dataSeo.find((item) => item.slug === slug);
+  
   if (!data) notFound();
 
   return (
     <main className="min-h-screen bg-[#0a192f] text-[#f9e2af] selection:bg-[#d4af37] selection:text-[#0a192f] py-24 px-6">
       <div className="mx-auto max-w-4xl">
         
-        {/* LINK KE HALAMAN UTAMA (BREADCRUMB) */}
+        {/* BREADCRUMB KE HOME */}
         <nav className="mb-12 flex items-center space-x-2 text-[10px] uppercase tracking-[0.3em] opacity-50">
           <Link href="/" className="hover:text-[#d4af37] transition-colors">
             Home
@@ -111,14 +112,14 @@ export default async function pSEOPage({ params }: { params: Promise<{ slug: str
 
         {/* CTA BUTTONS */}
         <div className="mt-24 flex flex-col items-center space-y-8 pb-10">
-          <a 
-            href={data.link_funnel} 
-            className="inline-block bg-[#d4af37] text-[#0a192f] px-16 py-6 rounded-full font-black uppercase tracking-[0.3em] text-sm hover:scale-105 transition-all shadow-[0_20px_60px_rgba(212,175,55,0.4)]"
+          {/* TOMBOL KUNING: Sekarang mengarah ke Home (toko.guidify.app) agar tidak 404 */}
+          <Link 
+            href="/" 
+            className="inline-block bg-[#d4af37] text-[#0a192f] px-16 py-6 rounded-full font-black uppercase tracking-[0.3em] text-sm hover:scale-105 transition-all shadow-[0_20px_60px_rgba(212,175,55,0.4)] text-center"
           >
             Mulai di {data.kota} Sekarang
-          </a>
+          </Link>
           
-          {/* LINK TAMBAHAN KE HOME DI BAWAH */}
           <Link href="/" className="text-[10px] uppercase tracking-[0.4em] opacity-40 hover:opacity-100 hover:text-[#d4af37] transition-all">
             ← Kembali ke Katalog Utama
           </Link>
