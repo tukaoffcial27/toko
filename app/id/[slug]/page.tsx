@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 import dataSeoRaw from "@/data-seo.json";
 import { notFound } from "next/navigation";
+import Link from "next/link"; // Tambahkan import Link
 
-// 1. DEFINISI TIPE (Agar VS Code tidak MERAH)
+// 1. DEFINISI TIPE
 interface SEOData {
   id: number;
   slug: string;
@@ -21,46 +22,43 @@ interface SEOData {
 
 const dataSeo = dataSeoRaw as SEOData[];
 
-// 2. PENAMBAHAN ISR: Mengizinkan halaman di luar 200 pertama di-generate otomatis saat diakses
 export const dynamicParams = true; 
 
-// 3. MODIFIKASI: Hanya render 200 page utama saat 'build' agar Vercel cepat
 export async function generateStaticParams() {
   return dataSeo.slice(0, 200).map((item) => ({
     slug: item.slug,
   }));
 }
 
-// 4. METADATA DINAMIS (Next.js 15: params bersifat Promise)
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const item = dataSeo.find((d) => d.slug === slug);
-  
   if (!item) return { title: "Not Found" };
-  
   return {
     title: item.copywriting.h1,
     description: item.copywriting.p1,
-    alternates: {
-      canonical: `https://toko.guidify.app/id/${slug}`,
-    },
+    alternates: { canonical: `https://toko.guidify.app/id/${slug}` },
   };
 }
 
-// 5. KOMPONEN HALAMAN UTAMA
 export default async function pSEOPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  
-  // Mencari data berdasarkan slug
   const data = dataSeo.find((item) => item.slug === slug);
-  
-  // Jika data tidak ditemukan di JSON
   if (!data) notFound();
 
   return (
     <main className="min-h-screen bg-[#0a192f] text-[#f9e2af] selection:bg-[#d4af37] selection:text-[#0a192f] py-24 px-6">
       <div className="mx-auto max-w-4xl">
         
+        {/* LINK KE HALAMAN UTAMA (BREADCRUMB) */}
+        <nav className="mb-12 flex items-center space-x-2 text-[10px] uppercase tracking-[0.3em] opacity-50">
+          <Link href="/" className="hover:text-[#d4af37] transition-colors">
+            Home
+          </Link>
+          <span>/</span>
+          <span className="text-[#d4af37]">{data.profesi}</span>
+        </nav>
+
         {/* HERO SECTION */}
         <div className="text-center mb-16 border-b border-[#d4af37]/20 pb-16">
           <h2 className="text-[#d4af37] text-xs font-bold uppercase tracking-[0.7em] mb-8">
@@ -111,14 +109,19 @@ export default async function pSEOPage({ params }: { params: Promise<{ slug: str
           </div>
         </article>
 
-        {/* CTA BUTTON */}
-        <div className="mt-24 text-center pb-10">
+        {/* CTA BUTTONS */}
+        <div className="mt-24 flex flex-col items-center space-y-8 pb-10">
           <a 
             href={data.link_funnel} 
             className="inline-block bg-[#d4af37] text-[#0a192f] px-16 py-6 rounded-full font-black uppercase tracking-[0.3em] text-sm hover:scale-105 transition-all shadow-[0_20px_60px_rgba(212,175,55,0.4)]"
           >
             Mulai di {data.kota} Sekarang
           </a>
+          
+          {/* LINK TAMBAHAN KE HOME DI BAWAH */}
+          <Link href="/" className="text-[10px] uppercase tracking-[0.4em] opacity-40 hover:opacity-100 hover:text-[#d4af37] transition-all">
+            ← Kembali ke Katalog Utama
+          </Link>
         </div>
 
       </div>
